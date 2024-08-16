@@ -1,13 +1,19 @@
 from rest_framework import viewsets
-from rest_framework.permissions import IsAuthenticated
 from .models import Comment
 from .serializers import CommentSerializer
 
 
-class CommentViewSet(viewsets.ModelViewSet):
-    queryset = Comment.objects.all()
-    serializer_class = CommentSerializer
-    permission_classes = [IsAuthenticated]
+from rest_framework.pagination import PageNumberPagination
 
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+
+class CommentPagination(PageNumberPagination):
+    page_size = 25
+    page_size_query_param = "page_size"
+    max_page_size = 100
+
+
+class CommentViewSet(viewsets.ModelViewSet):
+    queryset = Comment.objects.all().order_by("-created_at")
+    serializer_class = CommentSerializer
+    pagination_class = CommentPagination
+    filterset_fields = ["author__username", "created_at"]
