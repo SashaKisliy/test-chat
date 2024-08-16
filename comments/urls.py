@@ -1,9 +1,12 @@
-from django.urls import path
-from djangochannelsrestframework.consumers import view_as_consumer
-from .consumers import CommentConsumer
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from .views import CommentViewSet
 
-urlpatterns = []
+router = DefaultRouter()
+router.register(r"comments", CommentViewSet, basename="comment")
 
-websocket_urlpatterns = [
-    path('ws/comments/', view_as_consumer(CommentConsumer.as_asgi())),
+urlpatterns = [
+    path("api/", include(router.urls)),
 ]
+
+app_name = "comments"
